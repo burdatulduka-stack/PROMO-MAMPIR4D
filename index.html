@@ -450,9 +450,9 @@
     </div>
 
     <div class="page" id="page-voucher">
-      <span class="tag">Hadiah Tunai Kelipatan 20K</span>
+      <span class="tag">Hadiah Tunai Kelipatan 2X</span>
       <h2>Roda Keberuntungan MAMPIR4D</h2>
-      <p class="lead">Menangkan hadiah saldo gratis mulai dari Rp20.000 hingga Rp200.000. 1 User ID hanya boleh klaim 1x.</p>
+      <p class="lead">Menangkan hadiah saldo gratis mulai dari Rp25.000 hingga Rp1.000.000. 1 User ID hanya boleh klaim 1x.</p>
 
       <div class="card">
         <div class="input-group">
@@ -578,7 +578,7 @@
 
   <div class="floating-toast" id="floatingToast">
     <div class="toast-dot"></div>
-    <span id="toastText">User MAMPIR** baru saja mengklaim Rp 40.000</span>
+    <span id="toastText">User MAMPIR** baru saja mengklaim Rp 100.000</span>
   </div>
 
 </div>
@@ -702,7 +702,7 @@
   const spinBtn = document.getElementById("spinBtn");
   const wheelUidInput = document.getElementById("wheelUid");
 
-  const prizes = ["Rp 20.000", "Rp 40.000", "Rp 60.000", "Rp 80.000", "Rp 100.000", "Rp 200.000"];
+  const prizes = ["Rp 25.000", "Rp 50.000", "Rp 100.000", "Rp 200.000", "Rp 500.000", "Rp 1.000.000"];
   const colors = ["#EFF6FF", "#FFFFFF", "#EFF6FF", "#FFFFFF", "#EFF6FF", "#FFFFFF"];
   const numSegments = prizes.length;
   const segmentAngle = (2 * Math.PI) / numSegments;
@@ -865,11 +865,11 @@
       
       let amountFormatted = "";
       if (typeSelected === "Lucky Wheel") {
-        const wheelPrizesRandom = [20000, 40000, 60000, 80000, 100000, 200000];
+        const wheelPrizesRandom = [25000, 50000, 100000, 200000, 500000, 1000000];
         const winValue = wheelPrizesRandom[Math.floor(Math.random() * wheelPrizesRandom.length)];
         amountFormatted = `<span class="badge-prize">Rp ${winValue.toLocaleString('id-ID')}</span>`;
       } else {
-        const randomDeposit = Math.floor(Math.random() * 12 + 1) * 100000; 
+        const randomDeposit = Math.floor(Math.random() * 12 + 1) * 1000000; 
         const bonusValue = Math.min(randomDeposit, 1000000);
         amountFormatted = `<span class="badge-bonus">Rp ${bonusValue.toLocaleString('id-ID')}</span>`;
       }
@@ -910,9 +910,9 @@
     const track = document.getElementById("tickerTrack");
     if(!track) return;
     track.innerHTML = `
-      <span>User <b>M***a90</b> Berhasil Cairkan 🟢 <b>Rp 60.000</b> (Lucky Wheel)</span>
+      <span>User <b>M***a90</b> Berhasil Cairkan 🟢 <b>Rp 100.000</b> (Lucky Wheel)</span>
       <span>User <b>H***iSultan</b> Berhasil Cairkan 🟣 <b>Rp 500.000</b> (Bonus 100%)</span>
-      <span>User <b>G***rAbis</b> Berhasil Cairkan 🟢 <b>Rp 200.000</b> (Lucky Wheel)</span>
+      <span>User <b>G***rAbis</b> Berhasil Cairkan 🟢 <b>Rp 500.000</b> (Lucky Wheel)</span>
       <span>User <b>S***otHoki</b> Berhasil Cairkan 🟣 <b>Rp 1.000.000</b> (Bonus 100%)</span>
     `;
   }
@@ -958,7 +958,7 @@
     if(!toast || !toastText) return;
 
     const names = ["Sultan**", "Raja**", "Hoki**", "Gacor**", "Slotter**", "Cuan**", "Mega**", "Player**", "Bet**", "Putra**"];
-    const wheelPrizes = ["Rp 20.000", "Rp 40.000", "Rp 60.000", "Rp 80.000", "Rp 100.000", "Rp 200.000"];
+    const wheelPrizes = ["Rp 25.000", "Rp 50.000", "Rp 100.000", "Rp 200.000", "Rp 500.000", "Rp 1.000.000"];
     const bonusPrizes = ["Bonus Top-Up 100K", "Bonus Top-Up 300K", "Bonus Top-Up 500K", "Bonus Top-Up 1M"];
 
     setInterval(() => {
