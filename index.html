@@ -421,9 +421,15 @@
         <img src="https://images.linkcdn.cloud/global/asg/promotion/id/promo-7.png" alt="Promo MAMPIR4D" class="anim-float" style="height:140px;">
       </div>
 
-      <div class="btn-row">
-        <button class="btn btn-yellow" onclick="switchTab('voucher')"><svg viewBox="0 0 24 24" width="17" height="17" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/></svg> Main Lucky Wheel Berhadiah</button>
-        <button class="btn btn-purple" onclick="switchTab('bonus')"><svg viewBox="0 0 24 24" width="17" height="17" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M9 10.5c0-1 1-1.8 3-1.8s3 .8 3 1.8-1 1.5-3 1.5-3 .6-3 1.7 1 1.8 3 1.8 3-.6 3-1.5"/></svg> Ambil Bonus Top-Up 100%</button>
+    <div class="btn-row">
+        <button class="btn btn-yellow" onclick="switchTab('voucher')">
+          <img src="sale.svg" alt="Sale" width="18" height="18" style="vertical-align: middle; margin-right: 6px;"> 
+          Main Lucky Wheel Berhadiah
+        </button>
+        <button class="btn btn-purple" onclick="switchTab('bonus')">
+          <img src="Add Money.svg" alt="Add Money" width="18" height="18" style="vertical-align: middle; margin-right: 6px;"> 
+          Ambil Bonus Top-Up 100%
+        </button>
       </div>
 
       <div class="fomo-card">
@@ -433,7 +439,10 @@
       </div>
 
       <div class="card payment-card">
-        <h3 style="font-size:15px;margin-bottom:2px;">Sistem Layanan Gerbang Otomatis</h3>
+        <h3 style="font-size:15px; margin-bottom:2px; display:flex; align-items:center; gap:6px;">
+          <img src="pembayaran/payment.svg" alt="Payment" width="20" height="20">
+          Sistem Layanan Gerbang Otomatis
+        </h3>
         <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:12px;">Metode penarikan hadiah &amp; deposit online 24 jam.</p>
         <div class="pay-slider"><div class="pay-track" id="payTrack1"></div></div>
         <div class="pay-slider" style="margin-top:12px;"><div class="pay-track" id="payTrack2"></div></div>
@@ -503,7 +512,9 @@
     </div>
 
     <div class="page" id="page-tentang">
-      <span class="tag">Keamanan Sistem</span>
+      <span class="tag" style="display:inline-flex; align-items:center; gap:6px;">
+        <img src="pembayaran/servicemeter.svg" alt="Service Meter" width="14" height="14"> Keamanan Sistem
+      </span>
       <h2>Algoritma Pembagian Adil</h2>
       <p class="lead">Sistem aplikasi menggunakan transparansi acak berbasis matematika modern.</p>
       
@@ -547,10 +558,10 @@
       <svg viewBox="0 0 24 24"><path d="M4 11.5L12 4l8 7.5M6 10v9a1 1 0 001 1h10a1 1 0 001-1v-9"/></svg><span>Beranda</span>
     </button>
     <button class="nav-btn" data-page="voucher">
-      <svg viewBox="0 0 24 24"><path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/></svg><span>Lucky Wheel</span>
+      <img src="sale.svg" alt="Sale" width="20" height="20" style="margin-bottom:2px;"><span>Lucky Wheel</span>
     </button>
     <button class="nav-btn" data-page="bonus">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M9 10.5c0-1 1-1.8 3-1.8s3 .8 3 1.8-1 1.5-3 1.5-3 .6-3 1.7 1 1.8 3 1.8 3-.6 3-1.5"/></svg><span>TopUp Bonus</span>
+      <img src="Add Money.svg" alt="Add Money" width="20" height="20" style="margin-bottom:2px;"><span>TopUp Bonus</span>
     </button>
     <button class="nav-btn" data-page="panduan">
       <svg viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 012-2h13v18H6a2 2 0 01-2-2zM8 7h8M8 11h8"/></svg><span>Aturan</span>
@@ -629,14 +640,19 @@
   function buildPaySlider(trackId, logos){
     const track = document.getElementById(trackId); 
     if(!track) return;
-    const containerWidth = 448; // Nilai fix lebar container mobile maksimal (dikurangi padding)
+    const containerWidth = 448;
     const doubled = logos.concat(logos);
     
-    track.innerHTML = ''; // Reset kontainer
-    doubled.forEach(name=>{
+    track.innerHTML = '';
+    doubled.forEach(name => {
       const item = document.createElement('div'); 
       item.className = 'pay-item';
-      item.innerHTML = `<div class="logo-box"><span style="font-weight:700; font-size:12px; color:var(--blue); background:#fff; padding:4px 8px; border-radius:4px; border:1px solid var(--line); text-transform:uppercase;">${name.replace('_color','')}</span></div><span class="status-online">ONLINE</span>`;
+      item.innerHTML = `
+        <div class="logo-box">
+          <img src="pembayaran/${name}.webp" alt="${name}" style="height:24px; width:auto; object-fit:contain;" onerror="this.outerHTML='<span style=\'font-weight:700; font-size:12px; color:var(--blue);\'>${name.toUpperCase()}</span>'">
+        </div>
+        <span class="status-online">ONLINE</span>
+      `;
       track.appendChild(item);
     });
     
@@ -644,7 +660,7 @@
     track.querySelectorAll('.pay-item').forEach(el => { el.style.width = itemWidth + 'px'; });
     
     let step = 0;
-    setInterval(()=>{
+    setInterval(() => {
       step++; 
       track.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
       track.style.transform = 'translateX(-' + (itemWidth * step) + 'px)';
@@ -658,6 +674,14 @@
       }
     });
   }
+
+  // Dipanggil setelah DOM siap sepenuhnya
+  window.addEventListener('DOMContentLoaded', () => {
+    buildPaySlider('payTrack1', ['bca', 'bni', 'bri', 'mandiri_color', 'danamon']);
+    buildPaySlider('payTrack2', ['ovo', 'dana', 'gopay_color', 'linkaja', 'telkomsel', 'xl', 'mpay']);
+    startSocialProofToast();
+    generateTickerText();
+  });
 
   // Dipanggil setelah DOM siap sepenuhnya
   window.addEventListener('DOMContentLoaded', () => {
