@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MAMPIR4D — Program Loyalti Member</title>
+<meta name="description" content="MAMPIR4D: program loyalti member dengan poin, voucher gratis, dan bonus top-up saldo untuk member baru.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+ :root {
+  /* --- TEMA VALENTINE (DOMINAN UNGU & PUTIH) --- */
+  --cream: #18091d;          /* Background paling belakang (Ungu Gelap Deep) */
+  --white: #2e1038;          /* Container / Card utama (Ungu Plum) */
+  --grey-soft: #421850;      /* Input Box & Box Sekunder (Ungu Medium) */
+  --ink: #ffffff;            /* Warna Teks Utama (PUTIH DOMINAN) */
+  --ink-soft: #e2cce4;       /* Teks Sekunder (Putih Lembut / Soft Lavender) */
+  
+  /* Aksen Utama & Tombol (Ungu Terang & Pink Valentine) */
+  --blue: #a855f7;           /* Tombol Utama (Ungu Terang Bright Purple) */
+  --blue-deep: #f472b6;      /* Highlight / Hover (Pink Valentine Cerah) */
+  --blue-pale: #3f154a;      /* Background Badge / Tag Soft */
+  
+  /* Aksen Tambahan & Sorotan */
+  --yellow: #f472b6;         /* Sorotan / Bonus (Pink Cerah) */
+  --yellow-deep: #ec4899;    /* Hover Sorotan */
+  --purple: #a855f7;         /* Ungu Lavender */
+  --purple-deep: #7c3aed;    /* Ungu Pekat */
+  
+  /* Border & Shadow (Garis Putih & Glow Ungu) */
+  --line: rgba(255, 255, 255, 0.22); /* Garis Pembatas Putih Transparan */
+  --radius-lg: 26px;
+  --radius-md: 18px;
+  --shadow-card: 0 10px 26px -10px rgba(168, 85, 247, 0.35); /* Glow Ungu */
+  
+  /* Layout & Tombol Sosmed */
+  --nav-h: 68px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --accent: #229ED9;         /* Telegram Blue */
+  --whatsapp: #25D366;       /* WA Green */
+}
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.5;
+    overscroll-behavior-y:none;
+  }
+  h1,h2,h3,.display{font-family:'Sora',sans-serif; color: #ffffff;}
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  img{max-width:100%;display:block;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  button{font-family:inherit;}
+
+  /* ---------- App shell ---------- */
+  .app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    background:var(--cream);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ---------- Top bar (compact) ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px;
+    background:rgba(24, 9, 29, 0.9);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar img{height:34px;}
+  .topbar-actions{display:flex; gap:8px;}
+  .btn-history-top{
+    background: linear-gradient(135deg, var(--blue), #d84284);
+    color:#ffffff; font-size:11px; font-weight:700;
+    border:none; padding:8px 12px; border-radius:8px; cursor:pointer;
+    font-family:'Sora', sans-serif; display:flex; align-items:center; gap:4px;
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+  }
+  .topbar .bell{
+    width:38px;height:38px;border-radius:12px;background:var(--white);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  }
+  .topbar .bell svg{width:18px;height:18px;stroke:#ffffff;fill:none;stroke-width:1.8;}
+
+  /* ---------- Pages container ---------- */
+  .pages{
+    flex:1;
+    padding-bottom:calc(var(--nav-h) + var(--safe-b) + 18px);
+  }
+  .page{
+    display:none;
+    padding:18px 16px 6px;
+    opacity: 0;
+  }
+  .page.active{
+    display:block;
+    animation:fadeIn .35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  @keyframes fadeIn{
+    from{opacity:0;transform:translateY(8px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
+  .tag{
+    font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--yellow);display:inline-block;margin-bottom:8px;
+  }
+  .page h1{font-size:23px;font-weight:800;line-height:1.2;margin-bottom:8px; color: #ffffff;}
+  .page h2{font-size:19px;font-weight:800;margin-bottom:8px; color: #ffffff;}
+  .page p.lead{font-size:14.5px;color:var(--ink-soft);margin-bottom:16px;}
+
+  /* Input User ID global style */
+  .input-group {
+    margin-bottom: 16px; text-align: left;
+  }
+  .input-group label {
+    display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; color: #ffffff;
+  }
+  .input-uid {
+    width: 100%; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--line);
+    font-size: 15px; font-weight: 600; font-family: 'JetBrains Mono', monospace;
+    background: var(--grey-soft); color: #ffffff; outline: none; transition: border-color .2s;
+  }
+  .input-uid::placeholder { color: #ba93b7; }
+  .input-uid:focus { border-color: var(--blue); }
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 20px;border-radius:100px;font-weight:700;font-size:14.5px;
+    border:none;cursor:pointer;transition:transform .15s ease;
+    font-family:'Sora',sans-serif;width:100%;
+  }
+  .btn:disabled{ background:#421850 !important; color:#8c5991 !important; cursor:not-allowed; box-shadow:none !important; }
+  .btn:active:not(:disabled){transform:scale(.97);}
+  .btn-yellow{
+    background: linear-gradient(135deg, var(--blue), #d84284);
+    color:#ffffff;
+    box-shadow:0 8px 20px -8px rgba(168, 85, 247, 0.55);
+  }
+  .btn-purple{
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    color:#ffffff;
+    box-shadow:0 8px 20px -8px rgba(139, 92, 246, 0.55);
+  }
+  .btn-outline{background:var(--white);color:#ffffff;border:1.5px solid rgba(255, 255, 255, 0.4);}
+  .btn-row{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+
+  /* ---------- Hero (Beranda) ---------- */
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--white);border:1px solid var(--line);
+    padding:6px 13px;border-radius:100px;font-size:12px;font-weight:700;
+    color:#ffffff;box-shadow:var(--shadow-card);margin-bottom:14px;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  .hero-lottie{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-card);padding:6px;margin:14px 0 16px;
+  }
+  .hero-lottie{display:flex;align-items:center;justify-content:center;}
+  .hero-lottie img{height:170px;width:auto;max-width:100%;}
+
+  .fomo-card{
+    background:linear-gradient(90deg,var(--white),var(--grey-soft));
+    border:1px solid var(--line);border-radius:16px;padding:14px 16px;
+    box-shadow:var(--shadow-card);margin-bottom:18px;
+  }
+  .fomo-track{height:9px;border-radius:100px;background:var(--grey-soft);overflow:hidden;margin-bottom:8px;}
+  .fomo-track>span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--yellow));border-radius:100px;transition:width .6s ease;}
+  .fomo-count{font-size:13px; color:#ffffff;}
+  .fomo-count b{color:var(--yellow);}
+  .fomo-note{font-size:11px;color:var(--ink-soft);margin-top:6px;}
+
+  .stat-row{display:flex;gap:10px;margin-bottom:20px;}
+  .stat-chip{
+    flex:1;background:var(--white);border:1px solid var(--line);border-radius:14px;
+    padding:12px 8px;text-align:center;box-shadow:var(--shadow-card);
+  }
+  .stat-chip b{display:block;font-family:'Sora';font-size:16px;color:#ffffff;}
+  .stat-chip span{font-size:10.5px;color:var(--ink-soft);}
+
+  /* ---------- Cards generic ---------- */
+  .card{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius-md);
+    padding:18px;box-shadow:var(--shadow-card);margin-bottom:14px;
+  }
+  .list-check{display:flex;flex-direction:column;gap:10px;margin:14px 0 4px;}
+  .list-check li{display:flex;gap:9px;align-items:flex-start;font-size:13.5px; color:#ffffff;}
+  .list-check svg{width:18px;height:18px;stroke:var(--yellow);fill:none;stroke-width:2;flex:none;margin-top:1px;}
+
+  .lottie-inline{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius-md);
+    box-shadow:var(--shadow-card);padding:6px;margin-bottom:16px;
+  }
+  .lottie-inline{display:flex;align-items:center;justify-content:center;}
+  .lottie-inline img{height:120px;width:auto;max-width:100%;}
+
+  /* ---------- Steps (Panduan) ---------- */
+  .step{
+    display:flex;gap:12px;background:var(--white);border:1px solid var(--line);
+    border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow-card);
+  }
+  .step .num{
+    width:32px;height:32px;border-radius:10px;background:var(--blue);color:#ffffff;
+    font-family:'Sora';font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  .step h3{font-size:14.5px;margin-bottom:3px; color:#ffffff;}
+  .step p{font-size:12.5px;color:var(--ink-soft);}
+
+  /* ---------- FAQ ---------- */
+  .faq-item{background:var(--white);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px;}
+  .faq-q{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;width:100%;background:none;border:none;font-weight:600;font-size:13.5px;text-align:left;color:#ffffff;}
+  .faq-q .chev{width:16px;height:16px;stroke:var(--yellow);fill:none;stroke-width:2;transition:transform .25s ease;flex:none;}
+  .faq-item.open .chev{transform:rotate(180deg);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;font-size:13px;color:var(--ink-soft);}
+  .faq-a p{padding:0 16px 16px;}
+
+  /* ---------- Tentang / 4D ---------- */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .about-item{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center;box-shadow:var(--shadow-card);}
+  .about-item .letter{
+    width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-family:'Sora';font-weight:800;font-size:16px;margin:0 auto 8px;
+  }
+  .about-item:nth-child(1) .letter{background:var(--blue);}
+  .about-item:nth-child(2) .letter{background:#ec4899;}
+  .about-item:nth-child(3) .letter{background:var(--yellow);}
+  .about-item:nth-child(4) .letter{background:#22c55e;}
+  .about-item h3{font-size:12.5px;margin-bottom:3px; color:#ffffff;}
+  .about-item p{font-size:10.5px;color:var(--ink-soft);}
+  .about-note{font-size:12px;color:var(--ink-soft);background:var(--grey-soft);border-radius:12px;padding:12px 14px;}
+
+  /* ---------- Live ticker ---------- */
+  .ticker-wrap{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:10px 0;overflow:hidden;position:relative;margin-top:6px;margin-bottom:16px;}
+  .ticker-label{position:absolute;left:0;top:0;bottom:0;background:var(--blue);display:flex;align-items:center;gap:6px;padding:0 10px;font-size:10.5px;font-weight:700;font-family:'Sora';color:#fff;z-index:2;}
+  .ticker-label .pulse-dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.4s infinite;}
+  .ticker-track{display:flex;gap:30px;white-space:nowrap;animation:tick 26s linear infinite;padding-left:110px;}
+  @keyframes tick{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+  .ticker-track span{font-size:11.5px;color:#ffffff;}
+  .ticker-track b{color:var(--yellow);}
+
+  /* ---------- Bottom navigation ---------- */
+  .bottom-nav{
+    position:fixed;left:0;right:0;bottom:0;z-index:100;
+    max-width:480px;margin:0 auto;
+    background:var(--white);
+    border-top:1px solid var(--line);
+    display:flex;
+    padding-bottom:var(--safe-b);
+    box-shadow:0 -8px 24px -12px rgba(0,0,0,.5);
+  }
+  .nav-btn{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+    padding:10px 4px 8px;background:none;border:none;cursor:pointer;
+    color:var(--ink-soft);position:relative;
+  }
+  .nav-btn svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;}
+  .nav-btn span{font-size:10.5px;font-weight:600;}
+  .nav-btn.active{color:#ffffff;}
+  .nav-btn.active svg{stroke:#ffffff;}
+  .nav-btn.active::before{
+    content:"";position:absolute;top:2px;left:50%;transform:translateX(-50%);
+    width:20px;height:3px;border-radius:100px;background:var(--blue);
+  }
+
+  /* ---------- Tab-switch loading overlay ---------- */
+  .switch-overlay{
+    position:fixed;max-width:480px;margin:0 auto;inset:0;z-index:200;
+    background:rgba(24, 9, 29, 0.95);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .22s ease;
+  }
+  .switch-overlay.show{opacity:1;pointer-events:all;}
+  .switch-overlay .cards-loader {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+    animation: spin360 1.5s linear infinite;
+  }
+
+  @keyframes spin360 {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* ---------- Service bar meter ---------- */
+  .service-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .service-info { flex: 1; }
+  .service-info .title { font-size: 13.5px; font-weight: 700; color: #ffffff; }
+  .service-info .label { font-size: 11px; color: var(--ink-soft); }
+  .service-bar { height: 8px; background: var(--grey-soft); border-radius: 100px; margin-top: 4px; overflow: hidden; }
+  .service-bar-fill { height: 100%; background: #10B981; border-radius: 100px; width: 100%; }
+  .service-time { background: #10B981; color: #ffffff; padding: 6px 12px; border-radius: 8px; text-align: center; min-width: 65px; }
+  .service-time b { display: block; font-size: 15px; font-family: 'Sora'; line-height: 1.2; }
+  .service-time span { font-size: 10px; opacity: 0.9; }
+
+  /* ---------- Sistem Pembayaran ---------- */
+  .payment-card{overflow:hidden;}
+  .pay-slider{overflow:hidden;width:100%; position:relative; background: var(--white); border-radius: 8px;}
+  .pay-track{ display: flex; will-change: transform; }
+  .pay-item{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:8px 0; }
+  .pay-item .logo-box{ height:28px; width:100%; display:flex; align-items:center; justify-content:center; padding: 0 4px; }
+  .pay-item img{ height:100%; width:auto; max-width:100%; object-fit:contain; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.05)); }
+  .pay-item .status-online{ font-size:9px; font-weight:800; color:#16a34a; letter-spacing:.02em; text-transform:uppercase; }
+
+  /* --- LUCKY WHEEL STYLE --- */
+  .wheel-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin: 18px 0; }
+  .wheel-container { position: relative; width: 280px; height: 280px; }
+  #wheelCanvas { width: 100%; height: 100%; transform: rotate(0deg); }
+  .pointer { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); width: 26px; height: 26px; background: #EF4444; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15)); }
+  .spin-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 62px; height: 62px; background: linear-gradient(135deg, var(--blue), #d84284); color: white; border-radius: 50%; border: 3px solid #ffffff; font-family: 'Sora', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 12; outline: none; }
+  .spin-button:disabled { background: #421850; color: #8c5991; cursor: not-allowed; }
+
+  /* --- MODAL STYLE --- */
+  .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px; }
+  .modal-overlay.show { opacity: 1; pointer-events: auto; }
+  .modal-content { background: var(--white); border: 1px solid var(--line); color: #ffffff; width: 100%; max-width: 400px; border-radius: 24px; padding: 24px; text-align: center; box-shadow: var(--shadow-card); max-height: 90vh; overflow-y: auto; }
+  .voucher-box { background: var(--grey-soft); border: 2px dashed var(--blue); padding: 12px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: #ffffff; margin: 14px 0; letter-spacing: 1px; }
+  .btn-claim { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border-radius: 100px; text-decoration: none; font-weight: 700; font-family: 'Sora', sans-serif; font-size: 13.5px; margin-top: 8px; color: #fff; border: none; cursor: pointer; }
+  .btn-tg { background-color: var(--accent); }
+  .btn-wa { background-color: var(--whatsapp); }
+  .btn-close { background-color: var(--grey-soft); color: #ffffff; border: 1px solid var(--line); margin-top: 12px;}
+
+  /* --- HISTORY TABLE STYLE --- */
+  .history-table { width: 100%; border-collapse: collapse; margin-top: 14px; text-align: left; font-size: 12px; }
+  .history-table th { background: var(--grey-soft); color: #ffffff; padding: 10px; font-weight: 700; font-family: 'Sora'; border-bottom: 1px solid var(--line); }
+  .history-table td { padding: 10px; border-bottom: 1px solid var(--line); font-family: 'Inter', sans-serif; color: #ffffff; }
+  .history-table tr:nth-child(even) { background: var(--grey-soft); }
+  .badge-prize { background: #dcfce7; color: #16a34a; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+  .badge-bonus { background: #f3e8ff; color: #a855f7; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+
+  /* --- NOTIFICATION BADGE & POPUP --- */
+  .bell { position: relative; cursor: pointer; }
+  .bell-badge {
+    position: absolute; top: -2px; right: -2px;
+    width: 8px; height: 8px; background: #ef4444;
+    border-radius: 50%; border: 1px solid var(--white);
+  }
+  .notif-item {
+    text-align: left; padding: 10px; 
+    border-bottom: 1px solid var(--line); font-size: 12.5px; color: #ffffff;
+  }
+  .notif-item b { color: var(--yellow); display: block; margin-bottom: 2px; }
+
+  /* --- QUICK SELECT BUTTONS (BONUS) --- */
+  .quick-amounts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+  .btn-quick {
+    background: var(--grey-soft); border: 1px solid var(--line);
+    padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 700;
+    color: #ffffff; cursor: pointer; text-align: center;
+  }
+  .btn-quick:active { background: var(--blue); border-color: var(--blue); }
+
+  /* --- LIVE FLOATING NOTIFICATION (SOCIAL PROOF) --- */
+  .floating-toast {
+    position: fixed; bottom: calc(var(--nav-h) + var(--safe-b) + 12px);
+    left: 16px; right: 16px; background: rgba(46, 16, 56, 0.95);
+    border: 1px solid var(--line);
+    color: #ffffff; padding: 10px 16px; border-radius: 12px;
+    box-shadow: var(--shadow-card); z-index: 90;
+    display: flex; align-items: center; gap: 10px; font-size: 12px;
+    backdrop-filter: blur(4px); opacity: 0; transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none; max-width: 448px; margin: 0 auto;
+  }
+  .floating-toast.show { opacity: 1; transform: translateY(0); }
+  .floating-toast .toast-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; flex-shrink: 0; }
+
+  /* --- ANIMATIONS --- */
+  .anim-float{animation:floatUpDown 3s ease-in-out infinite;}
+  @keyframes floatUpDown{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  .anim-pulse{animation:pulseGrow 2.2s ease-in-out infinite;}
+  @keyframes pulseGrow{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+  .anim-spin{animation:spin360 1.4s linear infinite;}
+  @keyframes spin360{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="switch-overlay" id="switchOverlay">
+  <img src="cards-loader.gif" alt="Loading..." style="width: 75px; height: 75px; object-fit: contain;">
+</div>
+
+<div class="app">
+
+  <div class="topbar">
+    <img src="https://i.imgur.com/2QfLuY5.png" alt="MAMPIR4D">
+    <div class="topbar-actions">
+      <button class="btn-history-top" onclick="openHistoryModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> History
+      </button>
+      <div class="bell" onclick="openNotifModal()">
+        <span class="bell-badge"></span>
+        <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6zM10 20a2 2 0 004 0"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="pages">
+
+    <div class="page active" id="page-beranda">
+      <span class="eyebrow"><span class="dot"></span> Loyalti Member Update</span>
+      <h1>Klaim Paket Bonus Saldo &amp; Spin Lucky Wheel Eksklusif</h1>
+      <p class="lead">Cukup masukkan User ID resmi Anda, ambil reward instan tanpa diundi lama.</p>
+
+      <div class="hero-lottie">
+        <img src="https://images.linkcdn.cloud/global/asg/promotion/id/promo-7.png" alt="Promo MAMPIR4D" class="anim-float" style="height:140px;">
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-yellow" onclick="switchTab('voucher')"><svg viewBox="0 0 24 24" width="17" height="17" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/></svg> Main Lucky Wheel Berhadiah</button>
+        <button class="btn btn-purple" onclick="switchTab('bonus')"><svg viewBox="0 0 24 24" width="17" height="17" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M9 10.5c0-1 1-1.8 3-1.8s3 .8 3 1.8-1 1.5-3 1.5-3 .6-3 1.7 1 1.8 3 1.8 3-.6 3-1.5"/></svg> Ambil Bonus Top-Up 100%</button>
+      </div>
+
+      <div class="fomo-card">
+        <div class="fomo-top"><span class="pulse-dot"></span><b>Kuota Klaim Spesial Hari Ini</b></div>
+        <div class="fomo-track"><span id="fomoBarFill" style="width:100%"></span></div>
+        <div class="fomo-count">Sisa <b id="fomoCount">200</b> / <span id="fomoTotal">200</span> slot</div>
+      </div>
+
+      <div class="card payment-card">
+        <h3 style="font-size:15px;margin-bottom:2px;">Sistem Layanan Gerbang Otomatis</h3>
+        <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:12px;">Metode penarikan hadiah &amp; deposit online 24 jam.</p>
+        <div class="pay-slider"><div class="pay-track" id="payTrack1"></div></div>
+        <div class="pay-slider" style="margin-top:12px;"><div class="pay-track" id="payTrack2"></div></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-voucher">
+      <span class="tag">Hadiah Tunai Kelipatan 20K</span>
+      <h2>Roda Keberuntungan MAMPIR4D</h2>
+      <p class="lead">Menangkan hadiah saldo gratis mulai dari Rp20.000 hingga Rp200.000. 1 User ID hanya boleh klaim 1x.</p>
+
+      <div class="card">
+        <div class="input-group">
+          <label for="wheelUid">Masukkan User ID Anda Untuk Membuka Kunci Spin:</label>
+          <input type="text" id="wheelUid" class="input-uid" placeholder="Contoh: MAMPIR88" oninput="validateWheelInput()">
+        </div>
+      </div>
+
+      <div class="card" style="text-align: center; padding: 20px 14px;">
+        <div class="wheel-wrapper">
+          <div class="pointer"></div>
+          <div class="wheel-container">
+            <canvas id="wheelCanvas" width="280" height="280"></canvas>
+            <button class="spin-button" id="spinBtn" disabled onclick="startLuckyWheelSpin()">SPIN</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-bonus">
+      <span class="tag">Promo Spesial 100%</span>
+      <h2>Bonus Top-Up Saldo Member Baru</h2>
+      <p class="lead">Dapatkan bonus tambahan 100% dari nilai top-up Anda dengan batas maksimal bonus Rp1.000.000.</p>
+
+      <div class="card">
+        <div class="input-group">
+          <label for="bonusUid">Masukkan User ID Anda:</label>
+          <input type="text" id="bonusUid" class="input-uid" placeholder="Contoh: MAMPIR88" oninput="calculateBonusSim()">
+        </div>
+        <div class="input-group" style="margin-top: 12px;">
+          <label for="depositAmount">Rencana Jumlah Top-Up (Rp):</label>
+          <input type="number" id="depositAmount" class="input-uid" placeholder="Contoh: 500000" oninput="calculateBonusSim()">
+        </div> 
+        <div class="quick-amounts">
+          <button type="button" class="btn-quick" onclick="setQuickAmount(100000)">100K</button>
+          <button type="button" class="btn-quick" onclick="setQuickAmount(500000)">500K</button>
+          <button type="button" class="btn-quick" onclick="setQuickAmount(1000000)">1M (Maks)</button>
+        </div>
+
+        <div id="bonusSimulationBox" style="background: var(--grey-soft); padding: 12px; border-radius: 12px; margin: 14px 0; font-size: 13px; display: none;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Bonus Top-Up Didapat (100%):</span><b id="simBonusAmount" style="color:var(--purple-deep)">Rp0</b></div>
+          <div style="display:flex; justify-content:space-between; border-top:1px solid var(--line); padding-top:4px; font-weight:700;"><span>Total Saldo Diterima:</span><b id="simTotalAmount" style="color:var(--blue-deep)">Rp0</b></div>
+        </div>
+
+        <button id="bonusClaimBtn" class="btn btn-purple" style="margin-top: 10px;" disabled onclick="processBonusClaim()">Ambil Bonus Top-Up</button>
+      </div>
+    </div>
+
+    <div class="page" id="page-panduan">
+      <span class="tag">Aturan Klaim</span>
+      <h2>Syarat &amp; Ketentuan Utama</h2>
+      <p class="lead">Pastikan Anda membaca regulasi sistem deteksi kesamaan akun berikut.</p>
+      
+      <div class="step"><div class="num">!</div><div><h3>Satu Kali Klaim Per User ID</h3><p>Sistem mencatat riwayat klaim. ID yang sudah terekam tidak bisa mengambil hadiah ganda.</p></div></div>
+      <div class="step"><div class="num">!</div><div><h3>Batas Maksimal Bonus</h3><p>Bonus top-up 100% dibatasi maksimal Rp1.000.000 walaupun deposit Anda melebihi jumlah tersebut.</p></div></div>
+      <div class="step"><div class="num">!</div><div><h3>Verifikasi Admin Berwenang</h3><p>Kode unik pemenang wajib dicocokkan oleh pusat layanan WhatsApp/Telegram sebelum verifikasi saldo dinaikkan.</p></div></div>
+    </div>
+
+    <div class="page" id="page-tentang">
+      <span class="tag">Keamanan Sistem</span>
+      <h2>Algoritma Pembagian Adil</h2>
+      <p class="lead">Sistem aplikasi menggunakan transparansi acak berbasis matematika modern.</p>
+      
+      <div class="ticker-wrap">
+        <div class="ticker-label"><span class="pulse-dot"></span>Live Klaim</div>
+        <div class="ticker-track mono" id="tickerTrack"></div>
+      </div>
+      <p class="about-note">MAMPIR4D menjamin tidak ada manipulasi pada sistem roda putar keberuntungan. Sisa kuota harian akan otomatis terisi kembali setiap pukul 00:00 WIB.</p>
+    </div>
+
+  </div>
+
+  <div class="modal-overlay" id="prizeModal">
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-content" style="max-width:440px; padding:20px;">
+      <h2 style="font-family:'Sora'; font-size:18px; color:var(--blue-deep); margin-bottom:4px;">Live History Claim</h2>
+      <p style="font-size:12px; color:var(--ink-soft); margin-bottom:12px;">Daftar 20 User ID Terakhir yang Berhasil Melakukan Klaim Hari Ini</p>
+      
+      <div style="max-height: 320px; overflow-y: auto; border: 1px solid var(--line); border-radius: 12px;">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Jenis Klaim</th>
+              <th>Jumlah Hadiah</th>
+              <th>Waktu</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody"></tbody>
+        </table>
+      </div>
+      <button class="btn btn-close" onclick="closeHistoryModal()" style="width:100%;">Tutup Halaman History</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-page="beranda">
+      <svg viewBox="0 0 24 24"><path d="M4 11.5L12 4l8 7.5M6 10v9a1 1 0 001 1h10a1 1 0 001-1v-9"/></svg><span>Beranda</span>
+    </button>
+    <button class="nav-btn" data-page="voucher">
+      <svg viewBox="0 0 24 24"><path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/></svg><span>Lucky Wheel</span>
+    </button>
+    <button class="nav-btn" data-page="bonus">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M9 10.5c0-1 1-1.8 3-1.8s3 .8 3 1.8-1 1.5-3 1.5-3 .6-3 1.7 1 1.8 3 1.8 3-.6 3-1.5"/></svg><span>TopUp Bonus</span>
+    </button>
+    <button class="nav-btn" data-page="panduan">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 012-2h13v18H6a2 2 0 01-2-2zM8 7h8M8 11h8"/></svg><span>Aturan</span>
+    </button>
+    <button class="nav-btn" data-page="tentang">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M11 12h1v5h1"/></svg><span>Keamanan</span>
+    </button>
+  </nav>
+
+  <div class="floating-toast" id="floatingToast">
+    <div class="toast-dot"></div>
+    <span id="toastText">User MAMPIR** baru saja mengklaim Rp 40.000</span>
+  </div>
+
+</div>
+
+<script>
+  /* ---------- LOGIKA UTAMA DATABASE KLAIM LOCALSTORAGE (1 USER ID = 1 KLAIM) ---------- */
+  function getClaimedUsers() {
+    const data = localStorage.getItem('r4d_claimed_users');
+    return data ? JSON.parse(data) : [];
+  }
+
+  function registerClaimedUser(userId) {
+    const users = getClaimedUsers();
+    const cleanId = userId.trim().toUpperCase();
+    if (!users.includes(cleanId)) {
+      users.push(cleanId);
+      localStorage.setItem('r4d_claimed_users', JSON.stringify(users));
+    }
+  }
+
+  function isUserAlreadyClaimed(userId) {
+    const users = getClaimedUsers();
+    return users.includes(userId.trim().toUpperCase());
+  }
+
+  /* ---------- REDIRECT & NAVIGATION TAB + FIX ANIMATION ---------- */
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const switchOverlay = document.getElementById('switchOverlay');
+
+  function switchTab(target) {
+    const btn = document.querySelector(`.nav-btn[data-page="${target}"]`);
+    if(!btn || btn.classList.contains('active')) return;
+    
+    // Tampilkan tirai loading pelan
+    switchOverlay.classList.add('show');
+    
+    setTimeout(() => {
+      // Sembunyikan halaman lama & nyalakan halaman baru
+      document.querySelectorAll('.page').forEach(p => {
+        p.classList.remove('active');
+      });
+      
+      const newPage = document.getElementById('page-' + target);
+      newPage.classList.add('active');
+      
+      navBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      if(target === 'voucher') { 
+        setTimeout(drawWheel, 60); 
+      }
+      
+      // Tutup kembali tirai loading setelah halaman berganti
+      setTimeout(() => {
+        switchOverlay.classList.remove('show');
+      }, 150);
+      
+    }, 220);
+  }
+
+  navBtns.forEach(btn=>{ btn.addEventListener('click', ()=>{ switchTab(btn.dataset.page); }); });
+
+  /* ---------- FIX AUTOPLAY SLIDER PEMBAYARAN CONCURRENT ---------- */
+  function buildPaySlider(trackId, logos){
+    const track = document.getElementById(trackId); 
+    if(!track) return;
+    const containerWidth = 448; // Nilai fix lebar container mobile maksimal (dikurangi padding)
+    const doubled = logos.concat(logos);
+    
+    track.innerHTML = ''; // Reset kontainer
+    doubled.forEach(name=>{
+      const item = document.createElement('div'); 
+      item.className = 'pay-item';
+      item.innerHTML = `<div class="logo-box"><span style="font-weight:700; font-size:12px; color:var(--blue); background:#fff; padding:4px 8px; border-radius:4px; border:1px solid var(--line); text-transform:uppercase;">${name.replace('_color','')}</span></div><span class="status-online">ONLINE</span>`;
+      track.appendChild(item);
+    });
+    
+    let itemWidth = containerWidth / 4;
+    track.querySelectorAll('.pay-item').forEach(el => { el.style.width = itemWidth + 'px'; });
+    
+    let step = 0;
+    setInterval(()=>{
+      step++; 
+      track.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+      track.style.transform = 'translateX(-' + (itemWidth * step) + 'px)';
+    }, 2500);
+    
+    track.addEventListener('transitionend', () => {
+      if(step >= logos.length){ 
+        track.style.transition = 'none'; 
+        track.style.transform = 'translateX(0)'; 
+        step = 0; 
+      }
+    });
+  }
+
+  // Dipanggil setelah DOM siap sepenuhnya
+  window.addEventListener('DOMContentLoaded', () => {
+    buildPaySlider('payTrack1', ['bca','bni','bri','mandiri_color','danamon']);
+    buildPaySlider('payTrack2', ['ovo','dana','gopay_color','linkaja','telkomsel']);
+    startSocialProofToast();
+    generateTickerText();
+  });
+
+  /* ---------- LUCKY WHEEL SETTINGS (KELIPATAN 20 RIBU RUPIAH) ---------- */
+  const canvas = document.getElementById("wheelCanvas");
+  const ctx = canvas.getContext("2d");
+  const spinBtn = document.getElementById("spinBtn");
+  const wheelUidInput = document.getElementById("wheelUid");
+
+  const prizes = ["Rp 20.000", "Rp 40.000", "Rp 60.000", "Rp 80.000", "Rp 100.000", "Rp 200.000"];
+  const colors = ["#EFF6FF", "#FFFFFF", "#EFF6FF", "#FFFFFF", "#EFF6FF", "#FFFFFF"];
+  const numSegments = prizes.length;
+  const segmentAngle = (2 * Math.PI) / numSegments;
+
+  function drawWheel() {
+    if (!canvas) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const radius = canvas.width / 2;
+    
+    // Reset Canvas State
+    ctx.setTransform(1, 0, 0, 1, 0, 0); 
+    ctx.translate(radius, radius);
+
+    for (let i = 0; i < numSegments; i++) {
+      ctx.beginPath(); ctx.moveTo(0, 0);
+      ctx.arc(0, 0, radius - 10, i * segmentAngle, (i + 1) * segmentAngle);
+      ctx.fillStyle = colors[i]; ctx.fill();
+      ctx.lineWidth = 1.5; ctx.strokeStyle = "#E7e4d8"; ctx.stroke();
+
+      ctx.save();
+      ctx.rotate(i * segmentAngle + segmentAngle / 2);
+      ctx.textAlign = "right"; ctx.fillStyle = "#1A3FB8";
+      ctx.font = "bold 11px Sora, sans-serif";
+      ctx.fillText(prizes[i], radius - 20, 4);
+      ctx.restore();
+    }
+  }
+
+  function validateWheelInput() {
+    const uid = wheelUidInput.value.trim();
+    spinBtn.disabled = (uid.length < 3);
+  }
+
+  let isSpinning = false;
+  let currentRotation = 0;
+
+  function startLuckyWheelSpin() {
+    if (isSpinning) return;
+    const uid = wheelUidInput.value.trim().toUpperCase();
+
+    if (isUserAlreadyClaimed(uid)) {
+      showGlobalModal(`
+        <div style="font-size: 50px; margin-bottom:10px;">❌</div>
+        <h2 style="font-family:'Sora'; color:#EF4444; font-size:18px;">Akses Klaim Ditolak!</h2>
+        <p style="font-size:13px; color:var(--ink-soft); margin: 10px 0 16px;">User ID <b>${uid}</b> terdeteksi sudah pernah mengambil undian berhadiah sebelumnya. Setiap akun dibatasi maksimal satu kali klaim.</p>
+        <button class="btn btn-close" onclick="closeModal()">Tutup</button>
+      `);
+      return;
+    }
+
+    isSpinning = true;
+    spinBtn.disabled = true;
+    wheelUidInput.disabled = true;
+
+    const selectedIndex = Math.floor(Math.random() * prizes.length);
+    const degreesPerSegment = 360 / numSegments;
+    
+    // Hitung target derajat rotasi tepat di jarum penunjuk atas (270 derajat)
+    const targetDegree = (6 * 360) + (270 - (selectedIndex * degreesPerSegment) - (degreesPerSegment / 2));
+    currentRotation = targetDegree;
+
+    canvas.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.1, 1)";
+    canvas.style.transform = `rotate(${targetDegree}deg)`;
+
+    setTimeout(() => {
+      const finalPrize = prizes[selectedIndex];
+      registerClaimedUser(uid); 
+
+      const voucherCode = "R4D-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+      const msg = `Halo Admin MAMPIR4D, saya pemilik User ID: ${uid} telah memenangkan hadiah Roda Keberuntungan berupa Saldo Kemenangan ${finalPrize} dengan Kode Autentikasi: ${voucherCode}. Mohon diproses ke dalam akun saya.`;
+      const encodedMsg = encodeURIComponent(msg);
+
+      showGlobalModal(`
+        <div style="font-size: 50px; margin-bottom:10px;">💵</div>
+        <h2 style="font-family:'Sora'; font-size:20px; color:var(--blue-deep);">Selamat ${uid}!</h2>
+        <p style="font-size: 14px; color: var(--ink-soft);">Anda berhak mendapatkan saldo tunai loyalti sebesar:</p>
+        <div style="font-size:24px; font-weight:800; color:#16a34a; margin:8px 0;">${finalPrize}</div>
+        <div class="voucher-box">${voucherCode}</div>
+        <p style="font-size:12px; color:var(--ink-soft); margin-bottom:16px;">Kode unik di atas wajib dikirimkan ke Admin CS resmi di bawah untuk klaim saldo:</p>
+        <a href="https://t.me/Cuannbgt?text=${encodedMsg}" target="_blank" class="btn-claim btn-tg">💬 Cairkan Lewat Telegram</a>
+        <a href="https://wa.me/6281392046370?text=${encodedMsg}" target="_blank" class="btn-claim btn-wa">🟢 Cairkan Lewat WhatsApp</a>
+        <button class="btn btn-close" onclick="closeModal()">Selesai</button>
+      `);
+
+      setTimeout(() => {
+        canvas.style.transition = "none"; 
+        canvas.style.transform = `rotate(${targetDegree % 360}deg)`;
+        isSpinning = false; 
+        validateWheelInput(); 
+        wheelUidInput.disabled = false;
+        wheelUidInput.value = "";
+      }, 400);
+    }, 4100);
+  }
+
+  /* ---------- LOGIKA BONUS TOP-UP 100% (MAKSIMAL 1 JUTA) ---------- */
+  const bonusUidInput = document.getElementById("bonusUid");
+  const depositAmountInput = document.getElementById("depositAmount");
+  const bonusClaimBtn = document.getElementById("bonusClaimBtn");
+  const bonusSimulationBox = document.getElementById("bonusSimulationBox");
+
+  function calculateBonusSim() {
+    const uid = bonusUidInput.value.trim();
+    const depVal = parseFloat(depositAmountInput.value) || 0;
+
+    if (uid.length >= 3 && depVal >= 10000) {
+      bonusSimulationBox.style.display = "block";
+      const bonusCalculated = Math.min(depVal, 1000000);
+      const totalCalculated = depVal + bonusCalculated;
+
+      document.getElementById("simBonusAmount").textContent = "Rp " + bonusCalculated.toLocaleString('id-ID');
+      document.getElementById("simTotalAmount").textContent = "Rp " + totalCalculated.toLocaleString('id-ID');
+      bonusClaimBtn.disabled = false;
+    } else {
+      bonusSimulationBox.style.display = "none";
+      bonusClaimBtn.disabled = true;
+    }
+  }
+
+  function processBonusClaim() {
+    const uid = bonusUidInput.value.trim().toUpperCase();
+    const depVal = parseFloat(depositAmountInput.value) || 0;
+
+    if (isUserAlreadyClaimed(uid)) {
+      showGlobalModal(`
+        <div style="font-size: 50px; margin-bottom:10px;">❌</div>
+        <h2 style="font-family:'Sora'; color:#EF4444; font-size:18px;">Bonus Sudah Diambil!</h2>
+        <p style="font-size:13px; color:var(--ink-soft); margin: 10px 0 16px;">Maaf, User ID <b>${uid}</b> terdeteksi sudah menggunakan hak klaim promo selamat datang baru sebelumnya. Promo ini bersifat satu kali klaim per akun.</p>
+        <button class="btn btn-close" onclick="closeModal()">Tutup</button>
+      `);
+      return;
+    }
+
+    registerClaimedUser(uid); 
+    const finalBonus = Math.min(depVal, 1000000);
+    const msg = `Halo Admin MAMPIR4D, saya ingin mengambil Promo Bonus Top-Up Pertama 100% dengan User ID: ${uid}. Rencana nominal transaksi saya adalah sebesar Rp ${depVal.toLocaleString('id-ID')} dengan ekspektasi bonus Rp ${finalBonus.toLocaleString('id-ID')}. Tolong divalidasi formulir saya.`;
+    
+    showGlobalModal(`
+      <div style="font-size: 50px; margin-bottom:10px;">✅</div>
+      <h2 style="font-family:'Sora'; font-size:19px; color:var(--blue-deep);">Formulir Dikunci!</h2>
+      <p style="font-size: 13px; color: var(--ink-soft); margin-top:6px;">Tiket klaim bonus 100% untuk ID <b>${uid}</b> telah dibuat berhasil. Silakan konfirmasi pengisian saldo Anda langsung kepada CS.</p>
+      <a href="https://wa.me/6287784197944?text=${encodeURIComponent(msg)}" target="_blank" class="btn-claim btn-wa">🟢 Hubungi CS WhatsApp Untuk Top-Up</a>
+      <button class="btn btn-close" onclick="closeModal()">Kembali</button>
+    `);
+    
+    bonusUidInput.value = ""; depositAmountInput.value = ""; calculateBonusSim();
+  }
+
+  /* ---------- GENERATOR HALAMAN HISTORY KLAIM (20 USER RANDOM) ---------- */
+  function openHistoryModal() {
+    const tableBody = document.getElementById("historyTableBody");
+    tableBody.innerHTML = ""; 
+
+    const sampleUsernames = ["GacorMax","MAMPIRHoki","SultanJP","Raja4d","SlotterIna","BetKecil","CuanTerus","MegaWin88","HokiLuwuk","RungkatAnti","PutraMAMPIR","Dewajp","NagaEmas","Hoki777","AuraKasih","BocoranPro","MasterPrediction","MampirJuara","PemainInti","ChasingJp"];
+    const claimTypes = ["Lucky Wheel", "Bonus TopUp 100%"];
+    
+    for (let i = 0; i < 20; i++) {
+      const randomUser = sampleUsernames[i] + (Math.floor(Math.random() * 89 + 10));
+      const typeSelected = claimTypes[Math.floor(Math.random() * claimTypes.length)];
+      
+      let amountFormatted = "";
+      if (typeSelected === "Lucky Wheel") {
+        const wheelPrizesRandom = [20000, 40000, 60000, 80000, 100000, 200000];
+        const winValue = wheelPrizesRandom[Math.floor(Math.random() * wheelPrizesRandom.length)];
+        amountFormatted = `<span class="badge-prize">Rp ${winValue.toLocaleString('id-ID')}</span>`;
+      } else {
+        const randomDeposit = Math.floor(Math.random() * 12 + 1) * 100000; 
+        const bonusValue = Math.min(randomDeposit, 1000000);
+        amountFormatted = `<span class="badge-bonus">Rp ${bonusValue.toLocaleString('id-ID')}</span>`;
+      }
+
+      const timeLabel = `${Math.floor(Math.random() * 58) + 1} menit lalu`;
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td style="font-weight:600; color:var(--ink);">${randomUser}</td>
+        <td><span style="font-size:11px; font-weight:500;">${typeSelected}</span></td>
+        <td>${amountFormatted}</td>
+        <td style="color:var(--ink-soft); font-size:11px;">${timeLabel}</td>
+      `;
+      tableBody.appendChild(row);
+    }
+
+    document.getElementById("historyModal").classList.add("show");
+  }
+
+  function closeHistoryModal() { document.getElementById("historyModal").classList.remove("show"); }
+  
+  function showGlobalModal(htmlContent) { 
+    const md = document.getElementById("prizeModal"); 
+    document.getElementById("modalContent").innerHTML = htmlContent; 
+    md.classList.add("show"); 
+  }
+  
+  function closeModal() { document.getElementById("prizeModal").classList.remove("show"); }
+
+  /* ---------- FOMO SLOTS REFRESHER ---------- */
+  (function(){
+    let sisa = 184; const countEl = document.getElementById('fomoCount'); const fillEl = document.getElementById('fomoBarFill');
+    setInterval(()=>{ if(sisa > 7){ sisa -= Math.floor(Math.random()*2); if(countEl && fillEl) { fillEl.style.width = ((sisa/200)*100)+"%"; countEl.textContent = sisa; } } }, 7000);
+  })();
+
+  /* ---------- REFRESHER DATA TEXT TICKER ---------- */
+  function generateTickerText() {
+    const track = document.getElementById("tickerTrack");
+    if(!track) return;
+    track.innerHTML = `
+      <span>User <b>M***a90</b> Berhasil Cairkan 🟢 <b>Rp 60.000</b> (Lucky Wheel)</span>
+      <span>User <b>H***iSultan</b> Berhasil Cairkan 🟣 <b>Rp 500.000</b> (Bonus 100%)</span>
+      <span>User <b>G***rAbis</b> Berhasil Cairkan 🟢 <b>Rp 200.000</b> (Lucky Wheel)</span>
+      <span>User <b>S***otHoki</b> Berhasil Cairkan 🟣 <b>Rp 1.000.000</b> (Bonus 100%)</span>
+    `;
+  }
+
+  /* ---------- PUSAT PENGUMUMAN ---------- */
+  function openNotifModal() {
+    const badge = document.querySelector('.bell-badge');
+    if(badge) badge.style.display = 'none';
+
+    showGlobalModal(`
+      <h2 style="font-family:'Sora'; font-size:18px; color:var(--blue-deep); margin-bottom:12px;">📢 Pusat Pengumuman</h2>
+      <div style="max-height: 250px; overflow-y: auto;">
+        <div class="notif-item">
+          <b>🔥 Info Kuota Kritis</b>
+          Kuota klaim Lucky Wheel tersisa beberapa slot lagi untuk hari ini. Segera amankan voucher Anda sebelum reset jam 00:00 WIB!
+        </div>
+        <div class="notif-item">
+          <b>📌 Tips Pencairan Instan</b>
+          Gunakan User ID yang valid dan terdaftar saat klaim bonus 100% agar verifikasi otomatis sukses dalam waktu kurang dari 3 menit.
+        </div>
+        <div class="notif-item" style="border:none;">
+          <b>⚠️ Himbauan Keamanan</b>
+          Seluruh proses transaksi dan klaim reward MAMPIR4D bebas biaya admin. Harap berhati-hati terhadap penipuan pihak ketiga.
+        </div>
+      </div>
+      <button class="btn btn-close" onclick="closeModal()" style="width:100%; margin-top:14px;">Tutup Pengumuman</button>
+    `);
+  }
+
+  /* ---------- QUICK SELECT BUTTON ---------- */
+  function setQuickAmount(amount) {
+    const depInput = document.getElementById("depositAmount");
+    if(depInput) {
+      depInput.value = amount;
+      calculateBonusSim(); 
+    }
+  }
+
+  /* ---------- SOCIAL PROOF FLOATING TOAST ---------- */
+  function startSocialProofToast() {
+    const toast = document.getElementById("floatingToast");
+    const toastText = document.getElementById("toastText");
+    if(!toast || !toastText) return;
+
+    const names = ["Sultan**", "Raja**", "Hoki**", "Gacor**", "Slotter**", "Cuan**", "Mega**", "Player**", "Bet**", "Putra**"];
+    const wheelPrizes = ["Rp 20.000", "Rp 40.000", "Rp 60.000", "Rp 80.000", "Rp 100.000", "Rp 200.000"];
+    const bonusPrizes = ["Bonus Top-Up 100K", "Bonus Top-Up 300K", "Bonus Top-Up 500K", "Bonus Top-Up 1M"];
+
+    setInterval(() => {
+      const randomName = names[Math.floor(Math.random() * names.length)] + Math.floor(Math.random() * 89 + 10);
+      const isWheel = Math.random() > 0.5;
+      const reward = isWheel 
+        ? wheelPrizes[Math.floor(Math.random() * wheelPrizes.length)] + " dari Lucky Wheel"
+        : "Klaim " + bonusPrizes[Math.floor(Math.random() * bonusPrizes.length)];
+
+      toastText.innerHTML = `User <b>${randomName}</b> baru saja sukses melakukan <b>${reward}</b>!`;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 4000);
+
+    }, 9000); 
+  }
+</script>
+
+</body>
+</html>
